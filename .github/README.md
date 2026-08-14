@@ -134,6 +134,33 @@ subas a un repositorio).
 
 ### 5. Extraer los datos del cliente (MPQ)
 
+Este es el paso que históricamente más confusión genera (orden de los MPQ, carpetas exactas,
+flag de `ffmpeg` fácil de olvidar). Este fork trae un asistente que lo hace todo por ti:
+
+```bash
+php aowow --extract-client
+```
+
+Te pregunta la ruta a la carpeta `Data/` de tu cliente y qué locale(s) extraer (validando que la
+carpeta del locale exista de verdad antes de aceptarlo), y a partir de ahí se encarga de todo:
+clona y compila `MPQExtractor` si no lo tienes, extrae los archivos en el orden correcto, y
+reencodea el audio a `ogg/vorbis` con el flag correcto siempre — nada de eso depende de que lo
+recuerdes tú.
+
+En **Windows** detecta si tienes WSL disponible (el ejecutable presente *y* al menos una
+distribución instalada, no solo la característica activada) y te deja elegir entre usarlo
+(automático, corre la misma ruta que en Linux) o unas instrucciones guiadas paso a paso con
+herramientas nativas de Windows si no lo tienes o prefieres no usarlo.
+
+**Importante:** `Cfg::LOCALES` en la configuración determina qué locales están realmente activos.
+En AoWoW el **idioma de la interfaz y el locale de los datos del cliente son la misma cosa** — si
+activas un locale sin haber extraído sus datos, la web se rompe para cualquiera que caiga en ese
+idioma. Si solo vas a dar soporte a un idioma (como hace esta instancia, solo español), restringe
+`LOCALES` a ese único valor durante `php aowow --configure`.
+
+<details>
+<summary>Referencia manual (qué hace el asistente por debajo, o cómo hacerlo a mano si lo prefieres)</summary>
+
 Copia los siguientes directorios de los MPQ del cliente a `setup/mpqdata/<localeCode>/`
 (**minúsculas** — p. ej. `eses` para el cliente español, `enus` para el inglés), respetando el
 orden de los parches base (`common`, `common-2`, `expansion`, `lichking`, `patch`, `patch-2`,
@@ -158,12 +185,6 @@ Interface/Calendar/Holidays/
 Sound/
 ```
 
-**Importante:** `Cfg::LOCALES` en la configuración determina qué locales están realmente activos.
-En AoWoW el **idioma de la interfaz y el locale de los datos del cliente son la misma cosa** — si
-activas un locale sin haber extraído sus datos, la web se rompe para cualquiera que caiga en ese
-idioma. Si solo vas a dar soporte a un idioma (como hace esta instancia, solo español), restringe
-`LOCALES` a ese único valor durante `php aowow --configure`.
-
 Reencodea los `.wav` extraídos a `ogg/vorbis`:
 
 ```bash
@@ -173,6 +194,8 @@ ffmpeg -i archivo.wav -f ogg archivo.wav_
 **⚠️ El flag `-f ogg` es obligatorio.** Sin él, `ffmpeg` no reconoce el formato de salida por la
 extensión `.wav_` (no estándar) y falla en silencio para todos los archivos. La extensión final
 esperada por `setup/tools/filegen/soundfiles.ss.php` es `<archivo>.wav_` / `<archivo>.mp3_`.
+
+</details>
 
 ### 6. Configuración inicial y generación de datos
 
