@@ -436,7 +436,7 @@ class User
             $max = 32;
         }
         // AzerothCore
-        else if (CFG_ACC_AUTH_MODE == AUTH_MODE_ACORE)
+        else if (Cfg::get('ACC_AUTH_MODE') == AUTH_MODE_ACORE)
         {
             $min = 2;
             $max = 16;

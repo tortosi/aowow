@@ -894,3 +894,29 @@ a.profiler-achievements-total-right {
 .profiler-option-right:hover i    { background-position: -204px -48px; }
 .profiler-option-right:active i   { background-position: -204px -72px; }
 .profiler-option-right.selected i { background-position: -204px -24px; }
+
+/* aowow/local: flat stand-in shown where the retired Flash model viewer used to be */
+.profiler-flat-portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    gap: 10px;
+    text-align: center;
+}
+
+.profiler-flat-portrait img {
+    width: 112px;
+    height: 112px;
+    border: 1px solid #4c4c4c;
+    border-radius: 4px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, .6);
+    image-rendering: auto;
+}
+
+.profiler-flat-portrait-caption {
+    color: #d8d8d8;
+    font-size: 12px;
+}

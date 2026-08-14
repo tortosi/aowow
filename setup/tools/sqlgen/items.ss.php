@@ -244,7 +244,8 @@ CLISetup::registerSetup("sql", new class extends SetupScript
                    `name_loc0` LIKE "%(new)%"      OR  `name_loc0` LIKE "%(old)%"      OR
                    `name_loc0` LIKE "%deprecated%" OR  `name_loc0` LIKE "%obsolete%"   OR
                    `name_loc0` LIKE "%1H%"         OR  `name_loc0` LIKE "%QA%"         OR
-                   `name_loc0` LIKE "%(test)%"     OR  `name_loc0` LIKE "test %"       OR (`name_loc0` LIKE "% test %" AND `class` > 0)',
+                   `name_loc0` LIKE "%(test)%"     OR  `name_loc0` LIKE "test %"       OR (`name_loc0` LIKE "% test %" AND `class` > 0) OR
+                   `name_loc0` = "Frostmourne Art Demo"',
             CUSTOM_EXCLUDE_FOR_LISTVIEW
         );
 

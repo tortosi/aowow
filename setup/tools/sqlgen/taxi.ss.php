@@ -58,8 +58,8 @@ CLISetup::registerSetup("sql", new class extends SetupScript
                    tn.mapId AS origMap, tn.posX AS origPosX, tn.posY AS origPosY,
                    IF (tn.id NOT IN (15, 148, 225, 235) AND (
                           tn.id IN (64, 250) OR (
-                              tn.name_loc0 NOT LIKE "%Transport%" AND tn.name_loc0 NOT LIKE "%Quest%" AND
-                              tn.name_loc0 NOT LIKE "%Start%"     AND tn.name_loc0 NOT LIKE "%End%"
+                              tn.name_loc6 NOT LIKE "%Transport%" AND tn.name_loc6 NOT LIKE "%Quest%" AND
+                              tn.name_loc6 NOT LIKE "%Start%"     AND tn.name_loc6 NOT LIKE "%End%"
                           )
                       ), 0, 1) AS scripted
             FROM   dbc_taxinodes tn
@@ -72,7 +72,7 @@ CLISetup::registerSetup("sql", new class extends SetupScript
                    1 AS `type`, 0 AS `typeId`, 1 AS reactA, 1 AS reactH,
                    tn.name_loc0, tn.name_loc2, tn.name_loc3, tn.name_loc4, tn.name_loc6, tn.name_loc8,
                    tn.mapId AS origMap, tn.posX AS origPosX, tn.posY AS origPosY,
-                   IF (tn.name_loc0 NOT LIKE "%Transport%" AND tn.name_loc0 NOT LIKE "%Quest%" AND tn.name_loc0 NOT LIKE "%Start%" AND tn.name_loc0 NOT LIKE "%End%",
+                   IF (tn.name_loc6 NOT LIKE "%Transport%" AND tn.name_loc6 NOT LIKE "%Quest%" AND tn.name_loc6 NOT LIKE "%Start%" AND tn.name_loc6 NOT LIKE "%End%",
                        0, 1 ) AS scripted
             FROM   dbc_taxinodes tn
             JOIN   dbc_worldmaptransforms wmt ON ( tn.mapId = wmt.sourceMapId  AND tn.posX               BETWEEN wmt.minX   AND wmt.maxX AND tn.posY               BETWEEN wmt.minY  AND wmt.maxY)

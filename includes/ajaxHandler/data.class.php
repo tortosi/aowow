@@ -11,6 +11,7 @@ class AjaxData extends AjaxHandler
         'catg'      => ['filter' => FILTER_SANITIZE_NUMBER_INT                                          ],
         'skill'     => ['filter' => FILTER_CALLBACK,           'options' => 'AjaxData::checkSkill'      ],
         'class'     => ['filter' => FILTER_SANITIZE_NUMBER_INT                                          ],
+        'gender'    => ['filter' => FILTER_SANITIZE_NUMBER_INT                                          ],
         'callback'  => ['filter' => FILTER_CALLBACK,           'options' => 'AjaxData::checkCallback'   ]
     );
 
@@ -61,12 +62,30 @@ class AjaxData extends AjaxHandler
                 case 'quests':
                     $catg = isset($this->_get['catg']) ? $this->_get['catg'] : 'null';
                     if ($catg == 'null')
+                    {
+                        // category totals, plus every category in one go (same approach as 'recipes'):
+                        // otherwise the tab reports 0 completed until a category is picked by hand
                         Util::loadStaticFile('p-'.$set, $result, false);
+
+                        $locDir = 'datasets/'.Lang::getLocale()->json().'/';
+                        if (!is_dir($locDir))
+                            $locDir = 'datasets/enus/';
+
+                        foreach (glob($locDir.'p-'.$set.'-*') as $catgFile)
+                            Util::loadStaticFile(basename($catgFile), $result, true);
+                    }
                     else
                         Util::loadStaticFile('p-'.$set.'-'.$catg, $result, true);
 
                     $result .= "\n\$WowheadProfiler.loadOnDemand('".$set."', ".$catg.");\n";
 
+                    break;
+                // titles are gendered; the tab has no onDemand handler, so it is served with the initial page data
+                case 'titles':
+                    if (!Util::loadStaticFile('p-titles-'.(intVal($this->_get['gender'] ?? 0) ? 1 : 0), $result, true) && Cfg::get('DEBUG'))
+                        $result .= "alert('could not fetch static data: ".$set." for locale: ".Lang::getLocale()->json()."');";
+
+                    $result .= "\n\n";
                     break;
                 case 'recipes':
                     if (!$this->_get['callback'] || !$this->_get['skill'])

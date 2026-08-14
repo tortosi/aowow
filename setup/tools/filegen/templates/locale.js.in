@@ -58,4 +58,5 @@ var Locale = {
 
 };
 
-Locale.set(LOCALE_ENUS); // Default
+// Default: enUS may not be among the enabled locales, fall back to the first one that is
+Locale.set(Locale.locales[LOCALE_ENUS] ? LOCALE_ENUS : parseInt(Object.keys(Locale.locales)[0], 10));

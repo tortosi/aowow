@@ -59,9 +59,13 @@ while (Cfg::get('PROFILER_ENABLE', true))
         Profiler::queueFree();
         exit();
     }
-    // scheduled for future date
+    // scheduled for future date; avoid busy-spinning until it's due
     if ($row['requestTime'] > time())
+    {
+        CLI::write('next item due in '.($row['requestTime'] - time()).'s, waiting..');
+        usleep($delay * 1000 * 1000);
         continue;
+    }
 
     if (empty(Profiler::getRealms()[$row['realm']]))
     {

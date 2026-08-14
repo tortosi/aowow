@@ -183,7 +183,11 @@ CLISetup::registerSetup("build", new class extends SetupScript
             $rows = DB::World()->select(
                 'SELECT
                     pcs.Level AS ARRAY_KEY,
-                    0 as Strength, pcs.Agility - ?d, pcs.Stamina - ?d, pcs.Intellect - ?d, pcs.Spirit - ?d,
+                    0 as Strength,
+                    CAST(pcs.Agility   AS SIGNED) - ?d,
+                    CAST(pcs.Stamina   AS SIGNED) - ?d,
+                    CAST(pcs.Intellect AS SIGNED) - ?d,
+                    CAST(pcs.Spirit    AS SIGNED) - ?d,
                     pcs.BaseHP, IF(pcs.BaseMana <> 0, pcs.BaseMana, 100)
                 FROM
                     player_class_stats pcs
@@ -195,7 +199,9 @@ CLISetup::registerSetup("build", new class extends SetupScript
 
                 // WHERE pls.race = ?d AND 
 
-                $offset[0], /* $offset[0], */ $offset[1], $offset[2], $offset[3], $offset[4],
+                // 'Strength' is hardcoded to 0 above, so $offset[0] must NOT be bound here:
+                // passing it shifted every parameter, making the query filter on Class = $offset[4] (never matches)
+                $offset[1], $offset[2], $offset[3], $offset[4],
                 // in_array($class, [3, 7, 11]) ? 6 : 1,
                 $class
             );

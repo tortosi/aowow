@@ -148,8 +148,8 @@ class ProfilePage extends GenericPage
         if ($this->doResync)
             return;
 
-        // + .titles ?
-        $this->addScript([SC_JS_FILE, '?data=enchants.gems.glyphs.itemsets.pets.pet-talents.quick-excludes.realms.statistics.weight-presets.achievements']);
+        // the titles tab has no onDemand loader, so g_titles must come with the initial data (gendered)
+        $this->addScript([SC_JS_FILE, '?data=enchants.gems.glyphs.itemsets.pets.pet-talents.quick-excludes.realms.statistics.weight-presets.achievements.titles&gender='.intVal($this->subject?->getField('gender') ?? 0)]);
 
         // as demanded by the raid activity tracker
         $bossIds = array(

@@ -785,9 +785,10 @@ function Profiler() {
         _quests.initialize(_divQuests, tabIndex, {
             template: 'quest',
             onDemand: 1,
-            partial: 1,
+            // 'partial' removed: all categories are fetched in one request (see AjaxData::handleData),
+            // so the progress summary is correct as soon as the tab is opened
             dataArgs: function (x) {
-                return '&partial';
+                return '';
             },
             source: 'g_quests',
             order: 'g_quest_catorder',
@@ -4598,6 +4599,36 @@ function ProfilerInventory(_parent) {
         // !custom
     }
 
+    // aowow/local: flat stand-in for the retired Flash model viewer
+    function _renderFlatPortrait() {
+        var host = $WH.ge(_swfModel.id) || _swfModel;
+        $WH.ee(host);
+
+        var wrap = $WH.ce('div');
+        wrap.className = 'profiler-flat-portrait';
+
+        var icon = $WH.g_getProfileIcon(_profile.race, _profile.classs, _profile.gender, _profile.level, 0, 'large');
+        var img  = $WH.ce('img');
+        img.src  = g_staticUrl + '/images/wow/icons/large/' + icon + '.jpg';
+        img.alt  = _profile.name || '';
+        img.onerror = function () {
+            this.onerror = null;
+            this.src = g_staticUrl + '/images/wow/icons/large/inv_misc_questionmark.jpg';
+        };
+        $WH.ae(wrap, img);
+
+        var cap = $WH.ce('div');
+        cap.className = 'profiler-flat-portrait-caption';
+        var bits = [];
+        if (_profile.level)                 bits.push(LANG.level + ' ' + _profile.level);
+        if (g_chr_races[_profile.race])     bits.push(g_chr_races[_profile.race]);
+        if (g_chr_classes[_profile.classs]) bits.push(g_chr_classes[_profile.classs]);
+        $WH.ae(cap, $WH.ct(bits.join(' ')));
+        $WH.ae(wrap, cap);
+
+        $WH.ae(host, wrap);
+    }
+
     function _updateModel(slotId, refresh) {
         if (g_user.cookies && g_user.cookies['profiler3d'] == false) {
             if (!_mvInited) {
@@ -4665,8 +4696,9 @@ function ProfilerInventory(_parent) {
                 style: 'outline: none'
             };
 
-            swfobject.embedSWF(g_staticUrl + '/modelviewer/ZAMviewerfp11.swf', _swfModel.id, '100%', '100%', '10.0.0', g_staticUrl + '/modelviewer/expressInstall.swf', flashVars, params, attributes);
-            // swfobject.embedSWF('http://static.wowhead.com/modelviewer/ZAMviewerfp11.swf', _swfModel.id, '100%', '100%', '10.0.0', 'http://static.wowhead.com/modelviewer/expressInstall.swf', flashVars, params, attributes);
+            // aowow/local: Flash is dead and the ZAM viewer assets are gone, so the 3D model can't be rendered.
+            // Fall back to a flat portrait (race/gender/class) instead of leaving an empty black box.
+            _renderFlatPortrait();
 
             _mvInited = true;
         }
@@ -8867,6 +8899,11 @@ Listview.templates.gallery = {
 
         img = $WH.ce('img');
         img.src = g_staticUrl + '/modelviewer/thumbs/npc/' + spell.displayId + '.png';
+        // no modelviewer data on this install: fall back to the spell icon instead of a broken image
+        img.onerror = function () {
+            this.onerror = null;
+            this.src = g_staticUrl + '/images/wow/icons/large/' + (spell.icon || 'inv_misc_questionmark').toLowerCase() + '.jpg';
+        };
         img.height = img.width = 75;
         $WH.ae(a, img);
 

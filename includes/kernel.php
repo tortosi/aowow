@@ -139,10 +139,9 @@ set_error_handler(function ($errNo, $errStr, $errFile, $errLine) {
             break;
         case E_USER_ERROR:
             $errName  = 'USER_ERROR';
-        case E_USER_ERROR:
+        case E_RECOVERABLE_ERROR:
             $errName  = 'RECOVERABLE_ERROR';
-        case E_STRICT:                                      // ignore STRICT and DEPRECATED
-        case E_DEPRECATED:
+        case E_DEPRECATED:                                  // ignore DEPRECATED
         case E_USER_DEPRECATED:
             return true;
     }
@@ -193,7 +192,7 @@ set_exception_handler(function ($e) {
 
 // handle fatal errors
 register_shutdown_function(function () {
-    if ($e = error_get_last()) {
+    if (($e = error_get_last()) && ($e['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR))) {
         if (DB::isConnected(DB_AOWOW))
             DB::Aowow()->query(
                 'INSERT INTO ?_errors (`date`, `version`, `phpError`, `file`, `line`, `query`, `post`, `userGroups`, `message`) VALUES (UNIX_TIMESTAMP(), ?d, ?d, ?, ?d, ?, ?, ?d, ?) ON DUPLICATE KEY UPDATE `date` = UNIX_TIMESTAMP()',

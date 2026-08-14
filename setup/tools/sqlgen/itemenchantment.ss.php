@@ -32,7 +32,7 @@ CLISetup::registerSetup("sql", new class extends SetupScript
 
         // hide strange stuff
         DB::Aowow()->query('UPDATE ?_itemenchantment SET `cuFlags` = ?d WHERE `type1` = 0 AND `type2` = 0 AND `type3` = 0', CUSTOM_EXCLUDE_FOR_LISTVIEW);
-        DB::Aowow()->query('UPDATE ?_itemenchantment SET `cuFlags` = ?d WHERE `name_loc0` LIKE "%test%"', CUSTOM_EXCLUDE_FOR_LISTVIEW);
+        DB::Aowow()->query('UPDATE ?_itemenchantment SET `cuFlags` = ?d WHERE `name_loc6` LIKE "%test%"', CUSTOM_EXCLUDE_FOR_LISTVIEW);
 
         $this->reapplyCCFlags('itemenchantment', Type::ENCHANTMENT);
 

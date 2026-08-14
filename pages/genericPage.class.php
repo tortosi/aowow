@@ -229,6 +229,9 @@ class GenericPage
 
     private   $js            = [];
     private   $css           = [];
+    // dynamic ?data= scripts are session-bound (they carry the dataKey), so $js itself must not be cached.
+    // record the raw structs here (protected => included in the page cache) to re-add them on a cache hit.
+    protected $dynScripts    = [];
     private   $headerLogo    = '';
     private   $fullParams    = '';
 
@@ -416,6 +419,12 @@ class GenericPage
 
             $this->saveCache();
         }
+        else if ($this->dynScripts)                         // generateContent() was skipped: re-add its ?data= scripts for this session
+        {
+            $dyn = $this->dynScripts;
+            $this->dynScripts = [];
+            $this->addScript(...$dyn);
+        }
 
         if ($this instanceof GuidePage)
         {
@@ -492,6 +501,10 @@ class GenericPage
 
             $dynData = strpos($str, '?data=') === 0;
             $app = [];
+
+            // remember the unprocessed struct, so it can be regenerated for the current session on a cache hit
+            if ($dynData)
+                $this->dynScripts[] = [$type, $str, $flags];
 
             // insert locale string
             if ($flags & SC_FLAG_LOCALIZED)

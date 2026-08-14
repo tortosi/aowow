@@ -29,8 +29,8 @@ CLISetup::registerSetup("sql", new class extends SetupScript
 
         // categorization
         DB::Aowow()->query('UPDATE ?_skillline SET typeCat = -5 WHERE id = 777 OR (categoryId = 9 AND id NOT IN (356, 129, 185, 142, 155))');
-        DB::Aowow()->query('UPDATE ?_skillline SET typeCat = -4 WHERE categoryId = 9 AND name_loc0 LIKE "%racial%"');
-        DB::Aowow()->query('UPDATE ?_skillline SET typeCat = -6 WHERE id IN (778, 788, 758) OR (categoryId = 7 AND name_loc0 LIKE "%pet%")');
+        DB::Aowow()->query('UPDATE ?_skillline SET typeCat = -4 WHERE categoryId = 9 AND name_loc6 LIKE "%racial%"');
+        DB::Aowow()->query('UPDATE ?_skillline SET typeCat = -6 WHERE id IN (778, 788, 758) OR (categoryId = 7 AND name_loc6 LIKE "%pet%")');
 
         // more complex fixups
         DB::Aowow()->query('UPDATE ?_skillline SET name_loc8 = REPLACE(name_loc8, " - ", ": ") WHERE categoryId = 7 OR id IN (758, 788)');

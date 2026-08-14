@@ -222,8 +222,13 @@ CLISetup::registerUtility(new class extends UtilityScript
                     case DB_WORLD:
                         if (!DB::World()->selectCell('SHOW TABLES LIKE ?', 'version'))
                             $error[] = ' * '.$what.': doesn\'t seem to contain TrinityCore world tables!';
-                        else if (DB::World()->selectCell('SELECT `cache_id` FROM `version`') < TDB_WORLD_MINIMUM_VER)
-                            $error[] = ' * '.$what.': TDB world db is structurally outdated! (min rev.: '.CLI::bold(TDB_WORLD_MINIMUM_VER).')';
+                        else
+                        {
+                            $vString = DB::World()->selectCell('SELECT `db_version` FROM `version`');
+                            // AzerothCore uses its own cache_id numbering, not comparable to TDB revisions
+                            if (strpos($vString, 'ACDB') !== 0 && DB::World()->selectCell('SELECT `cache_id` FROM `version`') < TDB_WORLD_MINIMUM_VER)
+                                $error[] = ' * '.$what.': TDB world db is structurally outdated! (min rev.: '.CLI::bold(TDB_WORLD_MINIMUM_VER).')';
+                        }
                         break;
                     default:
                        // no further checks at this time

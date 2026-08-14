@@ -61,7 +61,7 @@ CLISetup::registerSetup("sql", new class extends SetupScript
             FROM      dbc_areatable a
             JOIN      dbc_map m ON m.id = IF(a.id = 2159, 249, a.mapId) -- Zone: Onyxias Lair is linked to the wrong map
             LEFT JOIN (SELECT mapId, BIT_OR(1 << difficulty) AS modeMask, MIN(nPlayer) AS minPl, MAX(nPlayer) AS maxPl FROM dbc_mapdifficulty GROUP BY mapId) md ON md.mapId = m.id
-            LEFT JOIN dbc_lfgdungeons lfgOpen ON a.mapId IN (0, 1, 530, 571) AND a.name_loc0 LIKE CONCAT("%", lfgOpen.name_loc0) AND lfgOpen.type = 4
+            LEFT JOIN dbc_lfgdungeons lfgOpen ON a.mapId IN (0, 1, 530, 571) AND a.name_loc6 LIKE CONCAT("%", lfgOpen.name_loc6) AND lfgOpen.type = 4
             LEFT JOIN (SELECT   mapId,
                                 MIN(IF(targetLevelMin, targetLevelMin, levelMin))    AS levelMin,
                                 MAX(IF(targetLevelMax, targetLevelMax, targetLevel)) AS levelMax,
@@ -73,7 +73,8 @@ CLISetup::registerSetup("sql", new class extends SetupScript
             LEFT JOIN dbc_worldmaparea wma ON wma.areaId = a.id
             LEFT JOIN dbc_worldmaptransforms wmt ON wmt.targetMapId <> wmt.sourceMapId AND wma.mapId  = wmt.sourceMapId AND
                       wma.left   < wmt.maxY AND wma.right  > wmt.minY AND
-                      wma.top    < wmt.maxX AND wma.bottom > wmt.minX',
+                      wma.top    < wmt.maxX AND wma.bottom > wmt.minX
+            GROUP BY  a.id',
             CUSTOM_EXCLUDE_FOR_LISTVIEW, MAX_LEVEL
         );
 

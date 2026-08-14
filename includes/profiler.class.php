@@ -477,7 +477,8 @@ class Profiler
         /* talents + glyphs */
         /********************/
 
-        $t = DB::Characters($realmId)->selectCol('SELECT `specMask` AS ARRAY_KEY, `spell` AS ARRAY_KEY2, `spell` FROM character_talent WHERE `guid` = ?d', $char['guid']); // specMask = talentGroup
+        // specMask is a bitmask (1 = spec 0, 2 = spec 1), unlike character_glyphs.talentGroup which is a plain 0-based index
+        $t = DB::Characters($realmId)->selectCol('SELECT (`specMask` >> 1) AS ARRAY_KEY, `spell` AS ARRAY_KEY2, `spell` FROM character_talent WHERE `guid` = ?d', $char['guid']);
         $g = DB::Characters($realmId)->select('SELECT `talentGroup` AS ARRAY_KEY, `glyph1` AS "g1", `glyph2` AS "g4", `glyph3` AS "g5", `glyph4` AS "g2", `glyph5` AS "g3", `glyph6` AS "g6" FROM character_glyphs WHERE `guid` = ?d', $char['guid']);
         for ($i = 0; $i < 2; $i++)
         {

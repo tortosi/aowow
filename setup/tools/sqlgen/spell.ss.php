@@ -538,7 +538,7 @@ CLISetup::registerSetup("sql", new class extends SetupScript
         // hide internal stuff from listviews
         // QA*; *DND*; square brackets anything; *(NYI)*; *(TEST)*
         // cant catch raw: NYI (uNYIelding); PH (PHasing)
-        DB::Aowow()->query('UPDATE ?_spell SET cuFlags = cuFlags | ?d WHERE name_loc0 LIKE "QA%" OR name_loc0 LIKE "%DND%" OR name_loc0 LIKE "%[%" OR name_loc0 LIKE "%(NYI)%" OR name_loc0 LIKE "%(TEST)%"', CUSTOM_EXCLUDE_FOR_LISTVIEW);
+        DB::Aowow()->query('UPDATE ?_spell SET cuFlags = cuFlags | ?d WHERE name_loc6 LIKE "QA%" OR name_loc6 LIKE "%DND%" OR name_loc6 LIKE "%[%" OR name_loc6 LIKE "%(NYI)%" OR name_loc6 LIKE "%(TEST)%"', CUSTOM_EXCLUDE_FOR_LISTVIEW);
 
 
         /**************/
@@ -577,12 +577,12 @@ CLISetup::registerSetup("sql", new class extends SetupScript
         // internal (-9) by faaaaaar not complete
         DB::Aowow()->query('UPDATE ?_spell s SET s.typeCat = -9 WHERE s.skillLine1 = 769');
         DB::Aowow()->query('UPDATE ?_spell s SET s.typeCat = -9 WHERE s.typeCat = 0 AND s.cuFlags = 0 AND (
-            s.name_loc0 LIKE "%qa%"       OR
-            s.name_loc0 LIKE "%debug%"    OR
-            s.name_loc0 LIKE "%internal%" OR
-            s.name_loc0 LIKE "%(NYI)%"    OR
-            s.name_loc0 LIKE "%(TEST)%"   OR
-            s.name_loc0 LIKE "%(OLD)%")'
+            s.name_loc6 LIKE "%qa%"       OR
+            s.name_loc6 LIKE "%debug%"    OR
+            s.name_loc6 LIKE "%internal%" OR
+            s.name_loc6 LIKE "%(NYI)%"    OR
+            s.name_loc6 LIKE "%(TEST)%"   OR
+            s.name_loc6 LIKE "%(OLD)%")'
         );
 
         // proficiencies (-11)
@@ -599,12 +599,12 @@ CLISetup::registerSetup("sql", new class extends SetupScript
 
         // hide some internal/unused stuffs
         DB::Aowow()->query('UPDATE ?_spell s SET s.cuFlags = ?d WHERE s.typeCat = 7 AND (
-            s.name_loc0 LIKE "%passive%" OR s.name_loc0 LIKE "%effect%" OR s.name_loc0 LIKE "%improved%" OR s.name_loc0 LIKE "%prototype%" OR                                          -- can probably be extended
+            s.name_loc6 LIKE "%passive%" OR s.name_loc6 LIKE "%effect%" OR s.name_loc6 LIKE "%improved%" OR s.name_loc6 LIKE "%prototype%" OR                                          -- can probably be extended
             (s.id NOT IN (47241, 59879, 59671) AND s.baseLevel <= 1 AND s.reqclassMask = 0)  OR                                                                                        -- can probably still be extended
             (s.SpellFamilyId = 15 AND s.SpellFamilyFlags1 & 0x2000 AND s.SpellDescriptionVariableId <> 84) OR                                                                          -- DK: Skill Coil
             (s.SpellFamilyId = 10 AND s.SpellFamilyFlags2 & 0x1000000 AND s.attributes1 = 0) OR                                                                                        -- Paladin: Bacon of Light hmm.. Bacon.... :]
             (s.SpellFamilyId = 6  AND s.SpellFamilyFlags3 & 0x4000) OR                                                                                                                 -- Priest: Lolwell Renew
-            (s.SpellFamilyId = 6  AND s.SpellFamilyFlags1 & 0x8000000 AND s.rank_loc0 <> "") OR                                                                                        -- Priest: Bling Bling
+            (s.SpellFamilyId = 6  AND s.SpellFamilyFlags1 & 0x8000000 AND s.rank_loc6 <> "") OR                                                                                        -- Priest: Bling Bling
             (s.SpellFamilyId = 8  AND s.attributes0 = 0x50 AND s.attributes1 & 0x400) OR                                                                                               -- Rogue: Intuition (dropped Talent..? looks nice though)
             (s.SpellfamilyId = 11 AND s.SpellFamilyFlags1 & 3 AND s.attributes1 = 1024) OR                                                                                             -- Shaman: Lightning Overload procs
             (s.attributes0 = 0x20000000 AND s.attributes3 = 0x10000000)                                                                                                                -- Master Demonologist (FamilyId = 0)
@@ -694,7 +694,7 @@ CLISetup::registerSetup("sql", new class extends SetupScript
         $effects = DB::Aowow()->select(
            'SELECT s2.id AS ARRAY_KEY,
                    s1.id,
-                   s1.name_loc0,
+                   s1.name_loc6,
                    s1.spellFamilyId,
                    s1.spellFamilyFlags1,      s1.spellFamilyFlags2,       s1.spellFamilyFlags3,
                    s1.effect1Id,              s1.effect2Id,               s1.effect3Id,
@@ -723,11 +723,11 @@ CLISetup::registerSetup("sql", new class extends SetupScript
             // second: search by name and family equality
             if (!$icons)
             {
-                $search = !empty($glyphAffects[$applyId]) ? $glyphAffects[$applyId] : str_replace('Glyph of ', '', $glyphEffect['name_loc0']);
+                $search = !empty($glyphAffects[$applyId]) ? $glyphAffects[$applyId] : str_replace('Glifo de ', '', $glyphEffect['name_loc6']);
                 if (is_int($search))
                     $where = "?d AND s.id = ?d";
                 else
-                    $where = "s.SpellFamilyId = ?d AND s.name_loc0 LIKE ?";
+                    $where = "s.SpellFamilyId = ?d AND s.name_loc6 LIKE ?";
 
                 $qry = str_replace('[WHERE]', $where, $queryIcons);
                 $icons = DB::Aowow()->selectRow($qry, $fam ?: 1, $search, SPELL_CU_TRIGGERED);
@@ -752,7 +752,7 @@ CLISetup::registerSetup("sql", new class extends SetupScript
             if ($icons)
                 DB::Aowow()->query('UPDATE ?_spell s SET s.skillLine1 = ?d, s.iconIdAlt = ?d WHERE s.id = ?d', $icons['skill'], $icons['icon'], $applyId);
             else
-                CLI::write('[spell] '.str_pad('['.$glyphEffect['id'].']', 8).'could not match '.CLI::bold($glyphEffect['name_loc0']).' with affected spells', CLI::LOG_WARN);
+                CLI::write('[spell] '.str_pad('['.$glyphEffect['id'].']', 8).'could not match '.CLI::bold($glyphEffect['name_loc6']).' with affected spells', CLI::LOG_WARN);
         }
 
         $this->reapplyCCFlags('spell', Type::SPELL);
