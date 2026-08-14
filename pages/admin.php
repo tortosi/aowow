@@ -89,10 +89,44 @@ class AdminPage extends GenericPage
                 array_push($this->path, 5);
                 $this->name = 'Reports';
                 break;
-            default:                                        // error out through unset template
+            default:                                        // no subpage given: show an index of what's available to this user
+                $this->reqUGroup = U_GROUP_STAFF;
+                $this->tpl       = 'list-page-generic';
+                $this->name      = 'Panel de staff';
+                $this->extraText = $this->buildAdminIndex();
+                break;
         }
 
         parent::__construct($pageCall, $pageParam);
+    }
+
+    // list of admin subpages, filtered to what the current user can actually open
+    private function buildAdminIndex() : string
+    {
+        $tools = array(
+            ['screenshots',   U_GROUP_ADMIN | U_GROUP_BUREAU | U_GROUP_SCREENSHOT,
+                'Gestor de capturas', 'Revisar, aprobar y borrar capturas de pantalla subidas por los usuarios.'],
+            ['siteconfig',    U_GROUP_ADMIN | U_GROUP_DEV,
+                'Configuración del sitio', 'Editar los ajustes de configuración del sitio (los mismos que gestiona <code>php aowow --configure</code> por CLI).'],
+            ['weight-presets', U_GROUP_ADMIN | U_GROUP_DEV | U_GROUP_BUREAU,
+                'Presets de pesos', 'Gestionar los conjuntos de pesos de estadísticas predefinidos que ofrece el comparador de objetos.'],
+            ['guides',        U_GROUP_STAFF,
+                'Guías pendientes', 'Revisar y aprobar guías enviadas por la comunidad, pendientes de publicación.'],
+            ['out-of-date',   U_GROUP_ADMIN | U_GROUP_BUREAU | U_GROUP_MOD,
+                'Comentarios desactualizados', 'Comentarios marcados por otros usuarios como desactualizados, pendientes de revisión.'],
+            ['reports',       U_GROUP_ADMIN | U_GROUP_BUREAU | U_GROUP_EDITOR | U_GROUP_MOD | U_GROUP_LOCALIZER | U_GROUP_SCREENSHOT | U_GROUP_VIDEO,
+                'Denuncias', 'Denuncias de contenido enviadas por usuarios (comentarios, capturas, etc.), pendientes de moderación.'],
+            ['phpinfo',       U_GROUP_ADMIN | U_GROUP_DEV,
+                'Información de PHP', 'Ver la salida de phpinfo() del servidor: versión de PHP, extensiones activas, configuración.'],
+        );
+
+        $text = "[b]Herramientas disponibles para tu cuenta:[/b]\n[ul]";
+        foreach ($tools as [$slug, $group, $title, $desc])
+            if (User::isInGroup($group))
+                $text .= "\n[li][url=?admin={$slug}][b]{$title}[/b][/url] &ndash; {$desc}[/li]";
+        $text .= "\n[/ul]";
+
+        return $text;
     }
 
     protected function generateContent() : void
