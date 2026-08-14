@@ -50,6 +50,13 @@
 /static/images/wow/talents/icons/*
 /static/images/wow/talents/backgrounds/*
 
+# datos del cliente para el visor 3D (se regeneran con setup/extract-client-models.sh)
+/static/modeldata/
+# fondos por raza: son arte del juego, igual que el resto de imágenes extraídas
+/static/modelviewer3d/bg/
+# prototipo del visor, superado por /static/modelviewer3d/
+/static/_test-strange-3d/
+
 # modelviewer (~7GB data)
 /static/modelviewer/models/*
 /static/modelviewer/thumbs/*
