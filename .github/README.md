@@ -1,66 +1,117 @@
 ![logo](../static/images/logos/home.png)
 
-[🇬🇧 English](README.md) | [ 🇪🇸 Spanish](README_ES.md)
+# Warcrafted — Base de datos de World of Warcraft: Wrath of the Lich King
 
-## Introduction
+## Qué es este proyecto
 
-AoWoW is a Database tool for World of Warcraft v3.3.5 (build 12340)
+Este repositorio es un fork de [AoWoW](https://github.com/azerothcore/aowow), el visor de base
+de datos de World of Warcraft 3.3.5 (Wrath of the Lich King) mantenido por la comunidad de
+[AzerothCore](https://www.azerothcore.org/). AoWoW en sí es, a su vez, una reescritura completa
+inspirada en el famoso sitio de base de datos "del cohete sonriente rojo" (Wowhead), pensada desde
+el origen para servidores privados.
 
-It is based upon the other famous Database tool for WoW, featuring the red smiling rocket.
+**Este fork añade sobre AoWoW/AzerothCore:**
 
-While the first releases can be found as early as 2008, today it is impossible to say who created this project.
+- Correcciones de compatibilidad con **PHP 8.4** (varias constantes y comportamientos obsoletos
+  que rompían el arranque o generaban errores fatales falsos).
+- Corrección de bugs reales en la adaptación a AzerothCore que venían del proyecto base:
+  autenticación unificada con AzerothCore rota por un typo de constante, interpretación incorrecta
+  de la máscara de especialización de talentos en el perfilador, y un bug que colapsaba por
+  completo los datos de "Zonas" cuando el cliente usado no es inglés (ver más abajo,
+  **"Parches aplicados"**).
+- Rebranding completo del sitio (nombre, logo, textos) y localización al español prácticamente
+  completa (traducciones que el AoWoW original dejaba en inglés).
+- Login **unificado** con el juego y el resto de servicios del proyecto: cualquier cuenta de
+  `acore_auth` funciona aquí sin pasos adicionales (ver **"Autenticación unificada con AzerothCore"**).
 
-This is a complete rewrite of the serverside php code and update to the clientside javascripts from 2008 to something 2013ish.
+No me atribuyo ningún crédito por el diseño original, el código base de AoWoW ni los scripts del
+lado del cliente — todo eso es obra de los mantenedores originales de AoWoW y de la comunidad de
+AzerothCore. Este proyecto **no está pensado para uso comercial**.
 
-I myself take no credit for the clientside scripting, design and layout that these php-scripts cater to.
+## Requisitos
 
-Also, this project is not meant to be used for commercial puposes of any kind!
+- Servidor web con **PHP ≥ 8.0** (probado y en producción sobre PHP 8.4), con las extensiones:
+  - `SimpleXML`
+  - `GD`
+  - `Mysqli`
+  - `mbstring`
+- **⚠️ La extensión `Intl` de PHP debe estar DESACTIVADA.** AoWoW define su propia clase `Locale`,
+  que choca con la clase `Locale` de la extensión Intl — el núcleo se niega a arrancar mientras
+  Intl esté cargada. Si usas `mod_php` (un único proceso PHP para todo el servidor, no PHP-FPM) y
+  necesitas Intl para otro proyecto en la misma máquina, la alternativa es aislar AoWoW en su
+  propio pool de PHP-FPM en vez de desactivar Intl globalmente.
+- **MySQL** ≥ 5.6 (no MariaDB — usa comportamientos específicos de MySQL en algunas consultas).
+- Para extraer los datos del cliente de WoW necesitas `cmake` y alguna de estas herramientas:
+  - [MPQExtractor](https://github.com/Sarjuuk/MPQExtractor) / [FFmpeg](https://ffmpeg.org/download.html) / [BLPConverter](https://github.com/Sarjuuk/BLPConverter) (opcional, para convertir imágenes con problemas de canal alfa)
+  - En Windows puede ser más cómodo usar [MPQEditor](http://www.zezula.net/en/mpq/download.html), [FFmpeg (build Windows)](http://ffmpeg.zeranoe.com/builds/) y [BLPConverter (build Windows)](https://github.com/PatrickCyr/BLPConverter)
+- El reencodeo de audio puede requerir [lame](https://sourceforge.net/projects/lame/files/lame/3.99/) o [vorbis-tools](https://www.xiph.org/downloads/) (que a su vez puede requerir `libvorbis`/`libogg`).
 
-## Requirements
-
-- Webserver running PHP ≥ 8.2 including extensions:
-  - SimpleXML
-  - GD
-  - Mysqli
-  - mbString
-- MySQL ≥ 5.7.0 OR MariaDB ≥ 10.6.4 OR similar
-- Tools require cmake: Please refer to the individual repositories for detailed information
-  - [MPQExtractor](https://github.com/Sarjuuk/MPQExtractor) / [FFmpeg](https://ffmpeg.org/download.html) / [BLPConverter](https://github.com/Sarjuuk/BLPConverter) (optional)
-  - WIN users may find it easier to use these alternatives
-    - [MPQEditor](http://www.zezula.net/en/mpq/download.html) / [FFmpeg](http://ffmpeg.zeranoe.com/builds/) / [BLPConverter](https://github.com/PatrickCyr/BLPConverter) (optional)
-
-Audio processing may require [lame](https://sourceforge.net/projects/lame/files/lame/3.99/) or [vorbis-tools](https://www.xiph.org/downloads/) (which may require libvorbis (which may require libogg))
-
-On Linux (debian-based) you can install the requirements with the following command:
+En Debian/Ubuntu, instala las extensiones de PHP con:
 
 ```bash
-apt install php-gd php-xml php-mbstring -y
+sudo apt install php-gd php-xml php-mbstring -y
+sudo phpdismod intl   # si el módulo Intl está activo — ver aviso arriba
 ```
 
-#### Highly Recommended
+### Recomendado
 
-- setting the following configuration values on your AzerothCore server will greatly increase the accuracy of spawn points
-  > Calculate.Creature.Zone.Area.Data = 1
-  > Calculate.Gameoject.Zone.Area.Data = 1
+Para mejorar mucho la precisión de los puntos de aparición de criaturas y objetos del mundo, activa
+en tu `worldserver.conf`:
 
-## Install
+```
+Calculate.Creature.Zone.Area.Data = 1
+Calculate.Gameoject.Zone.Area.Data = 1
+```
 
-#### 1. Acquire the required repositories
+## Instalación paso a paso
 
-- `git clone https://github.com/azerothcore/aowow.git aowow`
-- `git clone https://github.com/Sarjuuk/MPQExtractor.git MPQExtractor`
+### 1. Clonar el repositorio
 
-#### 2. Prepare the database
+```bash
+git clone https://github.com/tortosi/aowow.git aowow
+cd aowow
+```
 
-Ensure that the account you are going to use has **full** access on the database AoWoW is going to occupy and ideally only **read** access on the world database you are going to reference.
+Si vas a extraer datos del cliente tú mismo, clona también la herramienta de extracción **fuera**
+del repo de AoWoW (no forma parte de este proyecto):
 
-Import `setup/db_structure.sql` into the AoWoW database `mysql -p {your-db-here} < setup/db_structure.sql`
+```bash
+git clone https://github.com/Sarjuuk/MPQExtractor.git tools-external/MPQExtractor
+cd tools-external/MPQExtractor && cmake -B build && cmake --build build
+```
 
-Import to your AzerothCore database the table `spell_learn_spell`, import it from `www-aowow/setup/spell_learn_spell.sql`.
+### 2. Bases de datos
 
-#### 3. Server created files
+Necesitas **4 bases de datos** MySQL:
 
-See to it, that the web server is able to write the following directories and their children. If they are missing, the setup will create them with appropriate permissions
+| Base de datos | Contenido |
+|---|---|
+| `acore_aowow` (nueva, propia de este proyecto) | Todos los datos que AoWoW genera y sirve |
+| `acore_world` (de tu AzerothCore) | Objetos, criaturas, misiones, hechizos... |
+| `acore_auth` (de tu AzerothCore) | Cuentas de usuario, para el login unificado |
+| `acore_characters` (de tu AzerothCore) | Personajes, para el Perfilador |
+
+El usuario MySQL que uses necesita **privilegios completos** sobre `acore_aowow`, e idealmente solo
+**lectura** sobre las otras tres (AoWoW no necesita escribir en ellas, salvo el Perfilador, que sí
+necesita lectura sobre `acore_characters`).
+
+Crea la base y su estructura:
+
+```bash
+mysql -u <usuario> -p -e "CREATE DATABASE acore_aowow CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u <usuario> -p acore_aowow < setup/db_structure.sql
+```
+
+AoWoW necesita además la tabla `spell_learn_spell`, que **no viene por defecto en una instalación
+estándar de AzerothCore** — impórtala en tu base `acore_world`:
+
+```bash
+mysql -u <usuario> -p acore_world < setup/spell_learn_spell.sql
+```
+
+### 3. Permisos de escritura
+
+El servidor web necesita poder escribir en estos directorios (y crear los que falten):
 
 - `cache/`
 - `config/`
@@ -71,120 +122,204 @@ See to it, that the web server is able to write the following directories and th
 - `static/images/wow/`
 - `datasets/`
 
-#### 4. Extract the client archives (MPQs)
+### 4. Configurar la conexión a las bases de datos
 
-Extract the following directories from the client archives into `setup/mpqdata/`, while maintaining patch order (base mpq -> patch-mpq: 1 -> 9 -> A -> Z). The required paths are scattered across the archives. Overwrite older files if asked to.
+```bash
+php aowow --database
+```
 
-.. for every locale you are going to use:
+Asistente interactivo: te pedirá host, usuario, contraseña y nombre de cada una de las 4 bases de
+datos. Genera `config/config.php` (fuera de git a propósito, contiene credenciales — nunca lo
+subas a un repositorio).
 
-> \<localeCode>/DBFilesClient/
-> \<localeCode>/Interface/WorldMap/
-> \<localeCode>/Interface/FrameXML/GlobalStrings.lua
+### 5. Extraer los datos del cliente (MPQ)
 
-.. once is enough (still apply the localeCode though):
+Copia los siguientes directorios de los MPQ del cliente a `setup/mpqdata/<localeCode>/`
+(**minúsculas** — p. ej. `eses` para el cliente español, `enus` para el inglés), respetando el
+orden de los parches base (`common`, `common-2`, `expansion`, `lichking`, `patch`, `patch-2`,
+`patch-3`, `patch-A`) seguido de los específicos del locale
+(`locale-<CC>`, `expansion-locale-<CC>`, `lichking-locale-<CC>`, `patch-<CC>`, `patch-<CC>-2`,
+`patch-<CC>-3`), sobrescribiendo los archivos más antiguos si se solicita:
 
-> \<localeCode>/Interface/TalentFrame/
-> \<localeCode>/Interface/Icons/
-> \<localeCode>/Interface/Spellbook/
-> \<localeCode>/Interface/PaperDoll/
-> \<localeCode>/Interface/Glues/CharacterCreate/
-> \<localeCode>/Interface/Pictures
-> \<localeCode>/Interface/PvPRankBadges
-> \<localeCode>/Interface/FlavorImages
-> \<localeCode>/Interface/Calendar/Holidays/
-> \<localeCode>/Sound/
+```
+DBFilesClient/
+Interface/WorldMap/
+Interface/FrameXML/GlobalStrings.lua
+Interface/TalentFrame/
+Interface/Glues/Credits/
+Interface/Icons/
+Interface/Spellbook/
+Interface/PaperDoll/
+Interface/GLUES/CHARACTERCREATE/
+Interface/Pictures/
+Interface/PvPRankBadges/
+Interface/FlavorImages/
+Interface/Calendar/Holidays/
+Sound/
+```
 
-.. optionaly (not used in AoWoW):
+**Importante:** `Cfg::LOCALES` en la configuración determina qué locales están realmente activos.
+En AoWoW el **idioma de la interfaz y el locale de los datos del cliente son la misma cosa** — si
+activas un locale sin haber extraído sus datos, la web se rompe para cualquiera que caiga en ese
+idioma. Si solo vas a dar soporte a un idioma (como hace esta instancia, solo español), restringe
+`LOCALES` a ese único valor durante `php aowow --configure`.
 
-> \<localeCode>/Interface/Glues/Loadingscreens/
-> \<localeCode>/Interface/Glues/Credits/
+Reencodea los `.wav` extraídos a `ogg/vorbis`:
 
-**PAY ATTENTION:** you have to create a directory in `setup/mpqdata/` like `enus` (LOWERCASE) containing the data listed above.
+```bash
+ffmpeg -i archivo.wav -f ogg archivo.wav_
+```
 
-For example, you can just copy `Interface` and `DBFilesClient` directory into `setup/mpqdata/enus/` and move `Sound` into `setup/mpqdata/enus`.
+**⚠️ El flag `-f ogg` es obligatorio.** Sin él, `ffmpeg` no reconoce el formato de salida por la
+extensión `.wav_` (no estándar) y falla en silencio para todos los archivos. La extensión final
+esperada por `setup/tools/filegen/soundfiles.ss.php` es `<archivo>.wav_` / `<archivo>.mp3_`.
 
-You can use MPQExtractor to extract the data, once you installed it succesfully you can use this bash script to make extract the data in the right order.
+### 6. Configuración inicial y generación de datos
 
-- [extract.sh](https://gist.github.com/Helias/d9bd7708e28e9e8dcd5274bd2f3b68bc)
+```bash
+php aowow --setup
+```
 
-#### 5. Reencode the audio files
+Asistente guiado paso a paso (base de datos → configuración de sitio → generación SQL → generación
+de archivos → cuenta de administrador). Tardará un buen rato, sobre todo compilando imágenes de
+mapas y zonas.
 
-WAV-files need to be reencoded as `ogg/vorbis` and some MP3s may identify themselves as `application/octet-stream` instead of `audio/mpeg`.
+Si en vez del asistente completo prefieres ir paso a paso o regenerar solo una parte más adelante:
 
-- [example for WIN](https://gist.github.com/Sarjuuk/d77b203f7b71d191509afddabad5fc9f)
-- [example for \*nix](https://gist.github.com/Sarjuuk/1f05ef2affe49a7e7ca0fad7b01c081d)
+```bash
+php aowow --configure E <CLAVE> "<valor>"     # cambiar un ajuste de configuración
+php aowow --sql=<tipo,tipo,...> --force        # regenerar datos de un tipo concreto
+php aowow --build=<tipo,tipo,...> --force      # regenerar archivos de un tipo concreto
+```
 
-Note: it will take a long time.
+**⚠️ Nunca uses `--sql` o `--build` sin el signo `=` seguido del nombre exacto.** El framework CLI
+interpreta `--sql` sin argumento como "reconstruir absolutamente todo lo registrado", no solo el
+tipo que querías — puede tardar más de una hora y pone el sitio en mantenimiento mientras dura.
 
-#### 6. Run the initial setup from the CLI
+**⚠️ Nunca pongas un `timeout` a un `php aowow --sql=... --force` ni a `--build=...`.** Son scripts
+que empiezan con `TRUNCATE` sobre tablas en producción; cortarlos a mitad deja la tabla a medias.
+Déjalos terminar siempre.
 
-`php aowow --setup`.
+### 7. Autenticación unificada con AzerothCore
 
-This should guide you through with minimal input required from your end, but will take some time though, especially compiling the zone-images. Use it to familiarize yourself with the other functions this setup has. Yes, I'm dead serious: _Go read the code!_ It will help you understand how to configure AoWoW and keep it in sync with your world database.
+Este fork viene configurado para autenticar directamente contra `acore_auth.account` (la misma
+tabla que usa el propio juego), en vez de mantener una tabla de usuarios propia de AoWoW. Esto se
+controla con:
 
-When you've created your admin account you are done.
+```
+ACC_AUTH_MODE = 3   (AUTH_MODE_ACORE)
+```
 
-## Troubleshooting
+La primera vez que una cuenta existente de `acore_auth` inicia sesión en AoWoW, se crea
+automáticamente una fila vinculada en `aowow_account` (columna `extId` = id de `acore_auth.account`).
+Es retroactivo y automático — no hace falta migrar ni crear cuentas manualmente.
 
-**Q: The Page appears white, without any styles.**
+Para dar permisos de administrador a una cuenta, que esa persona inicie sesión una vez (para que se
+cree su fila en `aowow_account`) y luego:
 
-- A: The static content is not being displayed. You are either using SSL and AoWoW is unable to detect it or STATIC_HOST is not defined poperly. Either way this can be fixed via config `php aowow --siteconfig`
-- Probably you need to modify [10] and [15].
-- For example, if your project is in `htdocs/aowow/` (or `/var/www/html/aowow`), hence you visit it with `http://localhost/aowow/`, you should put:
+```sql
+UPDATE aowow_account SET userGroups = 2 WHERE user = '<nombre_de_usuario>';
+```
 
-- [10] localhost/aowow
-- [15] localhost/aowow/static
+(`2` = grupo administrador; ver `includes/defines.php` para el resto de grupos si necesitas un rol
+distinto — editor, moderador, etc. son máscaras de bits, se pueden sumar.)
 
-**Q: Fatal error: Can't inherit abstract function \<functionName> (previously declared abstract in \<className>) in \<path>**
+### 8. Perfilador de personajes (opcional)
 
-- A: You are using cache optimization modules for php, that are in confict with each other. (Zend OPcache, XCache, ..) Disable all but one.
+Activa `PROFILER_ENABLE = 1` con `php aowow --configure`. Usa un proceso en segundo plano
+(`prQueue`) que se lanza solo cuando alguien pide ver un personaje y se apaga al vaciar la cola —
+no hace falta un cron ni un servicio permanente.
 
-**Q: Some generated images appear distorted or have alpha-channel issues.**
+El reino debe tener un `timezone`/región **real** en `acore_auth.realmlist` (no `1`, que AoWoW
+interpreta como "reino de desarrollo", visible solo para administradores). Tras cambiar la región,
+regenera dos archivos:
 
-- A: Image compression is beyond my understanding, so i am unable to fix these issues within the blpReader.
-- BUT you can convert the affected blp file into a png file in the same directory, using the provided BLPConverter.
-- AoWoW will priorize png files over blp files.
+```bash
+php aowow --build=realms --force
+php aowow --build=realmmenu --force
+```
 
-**Q: How can i get the modelviewer to work?**
+## Parches aplicados en este fork (respecto a AoWoW/AzerothCore original)
 
-- A: You can't anymore. Wowhead switched from Flash to WebGL (as they should) and moved or deleted the old files in the process.
+Todos son correcciones de bugs reales, no cambios de comportamiento/preferencia:
 
-**Q: I'm getting random javascript errors!**
+- **`includes/user.class.php`**: `CFG_ACC_AUTH_MODE` (constante inexistente) → `Cfg::get('ACC_AUTH_MODE')`
+  en `isValidName()`. Era un typo real del proyecto base al añadir `AUTH_MODE_ACORE`: causaba un
+  error fatal en **cualquier intento de login** en modo AzerothCore.
+- **`includes/profiler.class.php`**: el `specMask` de `character_talent` se convierte con `>> 1`
+  antes de usarlo como índice. En AzerothCore `character_talent.specMask` es una **máscara de
+  bits** (1 = spec 0), no un índice plano como asume el código original — sin este arreglo, los
+  talentos se guardaban en la especialización equivocada.
+- **`setup/tools/sqlgen/zones.ss.php`** y varios `setup/tools/sqlgen/*.ss.php` más: el proyecto
+  base asume que `name_loc0` (inglés) de los datos DBC del cliente siempre está poblado, y lo usa
+  para hacer `JOIN`/`LIKE`. Si usas un cliente **no inglés**, esa columna está vacía y esas
+  consultas fallan en silencio o producen resultados corruptos — colapsaba por completo la sección
+  de "Zonas" y dejaba visibles en el sitio público un montón de hechizos/objetos de prueba interna
+  de Blizzard que deberían estar ocultos.
+- **`includes/kernel.php`** / **`includes/utilities.php`**: varias correcciones de compatibilidad
+  con PHP 8.4 (uso de la constante obsoleta `E_STRICT`, un `case E_USER_ERROR` duplicado que hacía
+  que los errores reportados con `trigger_error(..., E_USER_ERROR)` se descartaran en silencio, y
+  un manejador de errores fatales que marcaba como "Fatal Error" cualquier aviso de PHP aunque el
+  script hubiera terminado con éxito).
+- **`setup/tools/clisetup/dbconfig.us.php`**: el asistente de configuración de base de datos ya no
+  marca la base `world` como desactualizada solo por tener versionado `ACDB` (AzerothCore) en vez
+  de `TDB` (TrinityCore) — ese chequeo solo tenía sentido para TrinityCore.
+- **`pages/genericPage.class.php`**: los scripts de página inyectados dinámicamente (`?data=...`)
+  ahora sobreviven a un acierto de caché — antes se perdían porque vivían en una propiedad privada
+  no serializada, rompiendo silenciosamente ~30 páginas del sitio cuando se servían desde caché.
 
-- A: Some server configurations or external services (like Cloudflare) come with modules, that automaticly minify js and css files. Sometimes they break in the process. Disable the module in this case.
+## Solución de problemas
 
-**Q: Some search results within the profiler act rather strange. How does it work?**
+**P: La extensión Intl de PHP está activa y el sitio no arranca / da error fatal en `Locale`.**
 
-- A: Whenever you try to view a new character, AoWoW needs to fetch it first. Since the data is structured for the needs of TrinityCore and not for easy viewing, AoWoW needs to save and restructure it locally. To this end, every char request is placed in a queue. While the queue is not empty, a single instance of `prQueue` is run in the background as not to overwhelm the characters database with requests. This also means, some more exotic search queries can't be run agains the characters database and have to use the incomplete/outdated cached profiles of AoWoW.
+R: Es un choque directo con la clase `Locale` propia de AoWoW. Desactívala: `sudo phpdismod -s
+apache2 intl` (y `-s cli intl` si también usas el CLI). Si necesitas Intl para otro proyecto en el
+mismo servidor con `mod_php`, la alternativa es migrar AoWoW a su propio pool PHP-FPM.
 
-**Q: Screenshot upload fails, because the file size is too large and/or the subdirectories are visible from the web!**
+**P: La página aparece en blanco, sin ningún estilo.**
 
-- A: That's a web server configuration issue. If you are using Apache you may need to [enable the use of .htaccess](http://httpd.apache.org/docs/2.4/de/mod/core.html#allowoverride). Other servers require individual configuration.
+R: El contenido estático no se está sirviendo — o usas SSL y AoWoW no lo detecta, o `STATIC_HOST`
+no está bien definido. Revísalo con `php aowow --configure`.
 
-**Q: An Item, Quest or NPC i added or edited can't be searched. Why?**
+**P: Error fatal: "No se puede heredar la función abstracta ... previamente declarada".**
 
-- A: A search is only conducted against the currently used locale. You may have only edited the name field in the base table instead of adding multiple strings into the appropriate \*_locale tables. In this case searches in a non-english locale are run against an empty name field_.
+R: Tienes varios módulos de caché de opcode de PHP activos a la vez (Zend OPcache y algún otro).
+Desactiva todos menos uno.
 
-**Q: Failed to connect to database.**
+**P: No se pudo conectar a la base de datos.**
 
-- A: check your file config in `aowow/config/config.php`, if everything is correct, check if your password has **"#"** character contained in the password and replace it with the _encoded (URL) character_ correspondent **"%23"**, do the same for special characters if you still get this error.
-- If you do not resolve, try to don't use **"#"** in your password.
+R: Revisa `config/config.php`. Si tu contraseña de MySQL contiene el carácter `#`, sustitúyelo por
+su forma *URL-encoded* `%23` (y lo mismo con cualquier otro carácter especial que dé problemas).
 
-**Q: I cannot see the Quick Facts, Console error "Markup.js" not found**
+**P: Falta `Markup.js` / errores de consola sobre archivos JS no encontrados.**
 
-- A: unfortunately sometimes the setup can fail into copy `tools/filegen/templates/Markup.js.in` into `static/js/Markup.js` for permissions reason, as this also other js files can miss, check the permissions issue or copy them manually.
+R: A veces la configuración falla al copiar las plantillas `tools/filegen/templates/*.in` a
+`static/js/` por permisos. Comprueba que el servidor web puede escribir en `static/js/` y relanza
+`php aowow --build=markup --force`.
 
-## Thanks
+**P: ¿Cómo consigo el visor 3D de personajes en el Perfilador?**
 
-- @mix: for providing the php-script to parse .blp and .dbc into usable images and tables.
-- @LordJZ: the wrapper-class for DBSimple; the basic idea for the user-class.
-- @kliver: basic implementation of screenshot uploads.
-- @Sarjuuk: maintainer of the project.
+R: No es posible con los medios actuales — el visor original usaba Flash (retirado de todos los
+navegadores) y Wowhead eliminó los recursos de su visor WebGL que AoWoW referenciaba. Esta
+instancia usa como alternativa un retrato plano (icono de raza/género/clase). Un visor WebGL propio
+es un proyecto aparte, no cubierto por este fork.
 
-## Special Thanks
+**P: Solo hay datos para español (`eses`) — ¿por qué no aparecen otros idiomas?**
 
-Said website with the red smiling rocket, for providing this beautifull website!
+R: Es una decisión de configuración de esta instancia (`Cfg::LOCALES` restringido). El idioma de
+interfaz y el locale de datos del cliente son la misma cosa en AoWoW — activar un idioma sin haber
+extraído sus datos rompería la web para cualquiera que cayera en él. Si quieres dar soporte a más
+idiomas, repite el paso 5 (extracción MPQ) para cada locale adicional y añádelo a `LOCALES`.
 
-Please do not regard this project as blatant rip-off, rather as "We do really liked your presentation, but since time and content progresses, you are sadly no longer supplying the data we need".
+## Créditos
 
-![uses badges](http://forthebadge.com/images/badges/uses-badges.svg)
+- El equipo original de **AoWoW** y la comunidad de **AzerothCore**, por el trabajo real de fondo
+  que este fork solo adapta y corrige.
+- @mix — script PHP original para analizar `.blp`/`.dbc`.
+- @LordJZ — clase contenedora de DBSimple; base de la clase de usuario.
+- @kliver — implementación base de subida de capturas de pantalla.
+- @Sarjuuk — mantenimiento del proyecto AoWoW adaptado a AzerothCore.
+
+Por favor, no consideres este proyecto un intento de apropiación indebida del trabajo original: es
+"nos encantó vuestra base, y la hemos adaptado y corregido para que funcione bien en nuestro propio
+servidor AzerothCore".
