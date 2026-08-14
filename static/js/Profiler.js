@@ -4698,7 +4698,28 @@ function ProfilerInventory(_parent) {
 
             // aowow/local: Flash is dead and the ZAM viewer assets are gone, so the 3D model can't be rendered.
             // Fall back to a flat portrait (race/gender/class) instead of leaving an empty black box.
-            _renderFlatPortrait();
+            //
+            // Visor 3D propio (three.js + three-m2loader) en sustitución del visor Flash.
+            // Los datos de aspecto los resuelve el servidor en ?model3d=<reino>.<nombre>
+            // a partir de la BD de personajes y las DBC del cliente; los modelos y texturas
+            // salen de static/modeldata/ (extraídos con setup/extract-client-models.sh).
+            // Si algo falla, se cae al retrato plano en vez de dejar un hueco negro.
+            var realmId = (_profile.realm && _profile.realm[0]) ? _profile.realm[0] : 0;
+            if (realmId && _profile.name && !_profile.isCustom) {
+                var host = $WH.ge(_swfModel.id) || _swfModel;
+                $WH.ee(host);
+                var frame = $WH.ce('iframe');
+                frame.src = g_staticUrl + '/modelviewer3d/viewer.html?realm=' +
+                            $WH.urlencode(realmId) + '&char=' + $WH.urlencode(_profile.name);
+                frame.style.width = '275px';
+                frame.style.height = '345px';
+                frame.style.border = '0';
+                frame.setAttribute('scrolling', 'no');
+                $WH.ae(host, frame);
+            }
+            else {
+                _renderFlatPortrait();
+            }
 
             _mvInited = true;
         }

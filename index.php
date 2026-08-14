@@ -95,6 +95,7 @@ switch ($pageCall)
     case 'zone':
     case 'zones':
     /* called by script */
+    case 'model3d':                                         // datos de aspecto 3D de un personaje
     case 'data':                                            // tool: dataset-loader
     case 'cookie':                                          // lossless cookies and user settings
     case 'contactus':
