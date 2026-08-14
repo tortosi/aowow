@@ -2650,10 +2650,11 @@ a.modelviewer-close {
     display: block;
     border: 0;
     left: 0px;
-    top: 20px;
-    width: 160px;
-    height: 68px;
+    top: 5px;
+    width: 168px;
+    height: 96px;
     background: url(../images/logos/header.png) no-repeat;
+    background-size: 168px 96px;
 }
 
 /***********/

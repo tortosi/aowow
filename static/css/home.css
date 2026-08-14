@@ -19,10 +19,11 @@
 .home-logo {
     display:block;
     cursor:default;
-    width:261px;
-    height:119px;
+    width:448px;
+    height:256px;
     margin:0 auto 20px auto;
     background:url(../images/logos/home.png) no-repeat;
+    background-size:448px 256px;
 }
 
 .home-menu {

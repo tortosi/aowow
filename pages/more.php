@@ -84,6 +84,8 @@ class MorePage extends GenericPage
             {
                 $this->articleUrl = $pageCall;
                 $this->name = Lang::main('moreTitles', $pageCall);
+                if (is_array($this->name))
+                    $this->name = Lang::main($pageCall) ?: ucfirst($pageCall);
             }
         }
         else

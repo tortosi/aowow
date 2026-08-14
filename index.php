@@ -13,6 +13,11 @@ require 'includes/kernel.php';
 if (CLI)
     die("this script must not be run from CLI.\nto setup aowow use 'php aowow'\n");
 
+if ($pageCall == 'guides')                                  // no guide content of our own yet; point to the forum instead
+{
+    header('Location: '.Cfg::get('BOARD_URL'), true, 302);
+    exit;
+}
 
 $altClass = '';
 switch ($pageCall)

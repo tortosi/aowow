@@ -85,10 +85,12 @@ endif;
             <a href="?aboutus"><?=Lang::main('aboutUs'); ?></a>|<a href="https://github.com/azerothcore/aowow" target="_blank">Github</a>|<a href="#" id="footer-links-language"><?=Lang::main('language'); ?></a>
         </div>
         <div class="footer-copy">
-            &#12484; 2025 Aowow<br />
-            rev. <?=AOWOW_REVISION; ?>
+            &#12484; <?=date('Y');?> WarCrafted<br />
+            Versión Beta 1.0
+<?php if ($this->coreRevHash): ?>
             <br>
-            AzerothCore rev: <a href="https://github.com/azerothcore/azerothcore-wotlk/commit/804769400bcb">804769400bcb</a>
+            Versión compilada del juego: <a href="https://github.com/azerothcore/azerothcore-wotlk/commit/<?=$this->coreRevHash;?>" title="<?=Util::htmlEscape($this->coreRevText);?>"><?=$this->coreRevHash;?></a>
+<?php endif; ?>
         </div>
     </div>
 

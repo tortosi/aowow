@@ -292,6 +292,7 @@ $lang = array(
         'spells'        => "Spells",
         'zone'          => "zone",
         'zones'         => "Zones",
+        'user'          => "user",
         'faction'       => "faction",
         'factions'      => "Factions",
         'pet'           => "Pet",

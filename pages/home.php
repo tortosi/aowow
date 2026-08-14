@@ -16,6 +16,8 @@ class HomePage extends GenericPage
     protected $featuredBox = [];
     protected $oneliner    = '';
     protected $homeTitle   = '';
+    protected $coreRevHash = '';
+    protected $coreRevText = '';
 
     public function __construct()
     {
@@ -24,6 +26,16 @@ class HomePage extends GenericPage
 
     protected function generateContent()
     {
+        // AzerothCore revision actually running, taken from the server's own startup record
+        // (written by worldserver/authserver on boot) instead of a hardcoded commit hash
+        if ($_ = DB::Auth()->selectCell('SELECT revision FROM uptime ORDER BY starttime DESC LIMIT 1'))
+        {
+            if (preg_match('/rev\.\s*([0-9a-f]{7,40})/i', $_, $m))
+                $this->coreRevHash = $m[1];
+
+            $this->coreRevText = $_;
+        }
+
         // load oneliner
         if ($_ = DB::Aowow()->selectRow('SELECT * FROM ?_home_oneliner WHERE active = 1 LIMIT 1'))
             $this->oneliner = Util::jsEscape(Util::localizedString($_, 'text'));

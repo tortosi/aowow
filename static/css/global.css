@@ -647,8 +647,9 @@ html.ie678 .line var {
     font-size: 18px;
     line-height: 1.5em;
     z-index: 10000;
-    padding-top: 70px;
+    padding-top: 120px;
     background: url(../images/logos/header.png) center top no-repeat;
+    background-size: 168px 96px;
 }
 
 #noscript-text b {
