@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="<?=Lang::getLocale()->domain(); ?>">
 <head>
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="-1" />

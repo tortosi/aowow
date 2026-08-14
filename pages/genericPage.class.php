@@ -191,6 +191,10 @@ class GenericPage
     protected $title        = [];                           // for title-Element
     protected $name         = '';                           // for h1-Element
     protected $tabId        = null;
+    protected $description  = '';                           // <meta name="description">; vacío => se deriva del título
+    protected $canonical    = '';                           // <link rel="canonical">; vacío => se deriva de la URL actual
+    protected $noIndex      = false;                        // añade <meta name="robots" content="noindex, follow">
+    protected $ogImage      = '';                           // imagen de la tarjeta al compartir; vacío => el logo
     protected $gDataKey     = false;                        // adds the dataKey to the user vars
     protected $notFound     = [];
     protected $pageTemplate = [];
@@ -759,6 +763,63 @@ class GenericPage
     /*******************/
     /* General Display */
     /*******************/
+
+    // metadatos para <head>: descripción, canónica, robots y tarjetas de redes sociales.
+    // Se calcula al renderizar y no al construir la página, para que también aplique a las
+    // páginas servidas desde caché (las propiedades de las que depende sí se serializan).
+    public function getMeta() : array
+    {
+        $siteName = Cfg::get('NAME');
+
+        // el título llega como [sujeto, tipo, …, nombre del sitio]; la parte descriptiva es todo menos el sitio
+        $parts = $this->title;
+        if ($parts && end($parts) === $siteName)
+            array_pop($parts);
+
+        $subject = $parts ? implode(' - ', $parts) : $siteName;
+
+        // nunca confiar en el tipo: una página que ponga aquí un array no debe tumbar el <head> entero
+        $desc = is_string($this->description) ? $this->description : '';
+        $desc = trim(preg_replace('/\s+/u', ' ', strip_tags($desc)));
+        if (!$desc)
+            $desc = Lang::main('metaDesc', [$subject, $siteName]);
+
+        if (mb_strlen($desc) > 300)                         // los buscadores recortan mucho antes; evita descripciones kilométricas
+            $desc = mb_substr($desc, 0, 297).'…';
+
+        $canonical = $this->canonical;
+        if (!$canonical)
+        {
+            // solo la ruta y la query, sin fragmentos de sesión ni parámetros de refresco de caché
+            $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_QUERY);
+            parse_str((string)$uri, $q);
+            unset($q['refresh'], $q['power'], $q['domain']);
+            $canonical = Cfg::get('HOST_URL').'/'.($q ? '?'.http_build_query($q) : '');
+        }
+
+        // al compartir el enlace, el icono de la propia ficha dice mucho más que el logo del sitio.
+        // headIcons lo pone TrDetailPage, así que no existe en todas las páginas.
+        $image = $this->ogImage;
+        $small = false;
+        if (!$image && property_exists($this, 'headIcons') && !empty($this->headIcons[0]) && is_string($this->headIcons[0]))
+        {
+            $image = Cfg::get('STATIC_URL').'/images/wow/icons/large/'.strtolower($this->headIcons[0]).'.jpg';
+            $small = true;                                  // los iconos son de 56px: tarjeta pequeña, no panorámica
+        }
+
+        return array(
+            'description' => $desc,
+            'canonical'   => $canonical,
+            'noIndex'     => $this->noIndex,
+            'title'       => $subject,
+            'siteName'    => $siteName,
+            'image'       => $image ?: Cfg::get('STATIC_URL').'/images/logos/home.png',
+            'smallImage'  => $small,
+            'lang'        => Lang::getLocale()->domain(),
+            // 'eses' => 'es_ES', el formato que esperan Open Graph y compañía
+            'ogLocale'    => substr($j = Lang::getLocale()->json(), 0, 2).'_'.strtoupper(substr($j, 2, 2))
+        );
+    }
 
     // load given template string or GenericPage::$tpl
     public function display(string $override = '') : never

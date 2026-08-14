@@ -1,8 +1,30 @@
+<?php $meta = $this->getMeta(); ?>
+    <meta charset="UTF-8">
+    <?php /* la maquetación es de ancho fijo (min-width 980px, sin media queries): se declara ese
+             ancho para que el móvil lo reduzca a escala en vez de desbordarse horizontalmente */ ?>
+    <meta name="viewport" content="width=1024">
     <title><?=Util::htmlEscape(implode(' - ', $this->title)); ?></title>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="description" content="<?=Util::htmlEscape($meta['description']); ?>">
+<?php if ($meta['noIndex']): ?>
+    <meta name="robots" content="noindex, follow">
+<?php endif; ?>
+    <link rel="canonical" href="<?=Util::htmlEscape($meta['canonical']); ?>" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="SHORTCUT ICON" href="<?=Cfg::get('STATIC_URL'); ?>/images/logos/favicon.ico" />
     <link rel="search" type="application/opensearchdescription+xml" href="<?=Cfg::get('STATIC_URL'); ?>/download/searchplugins/aowow.xml" title="Aowow" />
+
+    <?php /* tarjeta al compartir el enlace en redes sociales, Discord, etc. */ ?>
+    <meta property="og:site_name" content="<?=Util::htmlEscape($meta['siteName']); ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="<?=Util::htmlEscape($meta['ogLocale']); ?>">
+    <meta property="og:title" content="<?=Util::htmlEscape($meta['title']); ?>">
+    <meta property="og:description" content="<?=Util::htmlEscape($meta['description']); ?>">
+    <meta property="og:url" content="<?=Util::htmlEscape($meta['canonical']); ?>">
+    <meta property="og:image" content="<?=Util::htmlEscape($meta['image']); ?>">
+    <meta name="twitter:card" content="<?=$meta['smallImage'] ? 'summary' : 'summary_large_image'; ?>">
+    <meta name="twitter:title" content="<?=Util::htmlEscape($meta['title']); ?>">
+    <meta name="twitter:description" content="<?=Util::htmlEscape($meta['description']); ?>">
+    <meta name="twitter:image" content="<?=Util::htmlEscape($meta['image']); ?>">
 <?php
 foreach ($this->css as [$type, $css]):
     if ($type == SC_CSS_FILE):

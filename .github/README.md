@@ -23,6 +23,16 @@ el origen para servidores privados.
   completa (traducciones que el AoWoW original dejaba en inglés).
 - Login **unificado** con el juego y el resto de servicios del proyecto: cualquier cuenta de
   `acore_auth` funciona aquí sin pasos adicionales (ver **"Autenticación unificada con AzerothCore"**).
+- **Visor 3D de personajes en el Perfilador**, en WebGL puro (Three.js), reemplazando el visor
+  original en Flash (retirado de todos los navegadores) — modelo, equipo, geosets, texturas
+  compuestas y parpadeo animado, generado a partir de los datos reales del personaje (ver
+  **"Visor 3D de personajes"**).
+- Asistente automático de extracción del cliente (`php aowow --extract-client`), que sustituye el
+  proceso manual propenso a errores (orden de MPQ, flag de `ffmpeg` fácil de olvidar) por un CLI
+  guiado, con detección de WSL en Windows.
+- SEO: metadatos completos por página (descripción, Open Graph, Twitter Card, URL canónica),
+  `sitemap.xml` generado a partir de la base de datos y un enlace permanente a la web principal del
+  proyecto (ver **"SEO y sitemap"**).
 
 No me atribuyo ningún crédito por el diseño original, el código base de AoWoW ni los scripts del
 lado del cliente — todo eso es obra de los mantenedores originales de AoWoW y de la comunidad de
@@ -262,6 +272,44 @@ php aowow --build=realms --force
 php aowow --build=realmmenu --force
 ```
 
+### 9. Visor 3D de personajes (opcional)
+
+Requiere el Perfilador activado (paso 8) y datos de modelos/texturas extraídos del cliente aparte
+de los del paso 5 (`--extract-client` no los incluye: son varios GB solo de modelos de personaje y
+equipo, así que se mantienen como un paso independiente y opcional).
+
+**a) Extraer modelos y texturas de personaje/equipo:**
+
+```bash
+./setup/extract-client-models.sh '/ruta/a/tu/Wow/Data'
+```
+
+Recorre los mismos MPQ que `--extract-client` pero extrayendo `Character\`, `Item\ObjectComponents\`
+y `Item\TextureComponents\`, con progreso ponderado por tamaño de archivo y ETA. Destino por
+defecto: `static/modeldata/` (fuera de git — son datos extraídos, no código).
+
+**b) Importar las DBC que describen el aspecto del personaje:**
+
+```bash
+php aowow --dbc=charsections,charhairgeosets,characterfacialhairstyles,helmetgeosetvisdata
+```
+
+(`itemdisplayinfo` ya se importa como parte del paso 6; sus campos de texturas por región y
+geosets de casco están definidos en `setup/tools/dbc/12340.ini`.)
+
+**c) Generar los puntos de anclaje de armas/escudos/hombreras:**
+
+```bash
+python3 setup/tools/extract-attachments.py
+```
+
+Vuelca los 20 modelos de raza/género a `static/modeldata/attachments.json`.
+
+Con esto, el Perfilador sustituye automáticamente el retrato plano por el visor 3D en cuanto abres
+el perfil de un personaje real. El endpoint que resuelve cada personaje es
+`includes/ajaxHandler/model3d.class.php` (`?model3d=<reino>.<nombre>`); el visor en sí es
+`static/modelviewer3d/viewer.html`, genérico para cualquier raza/género/equipo.
+
 ## Parches aplicados en este fork (respecto a AoWoW/AzerothCore original)
 
 Todos son correcciones de bugs reales, no cambios de comportamiento/preferencia:
@@ -322,10 +370,10 @@ R: A veces la configuración falla al copiar las plantillas `tools/filegen/templ
 
 **P: ¿Cómo consigo el visor 3D de personajes en el Perfilador?**
 
-R: No es posible con los medios actuales — el visor original usaba Flash (retirado de todos los
-navegadores) y Wowhead eliminó los recursos de su visor WebGL que AoWoW referenciaba. Esta
-instancia usa como alternativa un retrato plano (icono de raza/género/clase). Un visor WebGL propio
-es un proyecto aparte, no cubierto por este fork.
+R: Este fork trae uno propio en WebGL (el original usaba Flash, retirado de todos los navegadores,
+y Wowhead eliminó los recursos de su visor al que apuntaba AoWoW). Sigue el paso 9 de la
+instalación (**"Visor 3D de personajes"**). Si no lo configuras, el Perfilador cae automáticamente
+a un retrato plano (icono de raza/género/clase) sin que el resto del sitio se vea afectado.
 
 **P: Solo hay datos para español (`eses`) — ¿por qué no aparecen otros idiomas?**
 
@@ -333,6 +381,38 @@ R: Es una decisión de configuración de esta instancia (`Cfg::LOCALES` restring
 interfaz y el locale de datos del cliente son la misma cosa en AoWoW — activar un idioma sin haber
 extraído sus datos rompería la web para cualquiera que cayera en él. Si quieres dar soporte a más
 idiomas, repite el paso 5 (extracción MPQ) para cada locale adicional y añádelo a `LOCALES`.
+
+## SEO y sitemap
+
+El AoWoW original apenas emitía metadatos (solo `<title>`), y sus listados (`?items`, `?spells`,
+`?npcs`...) se pintan enteramente por JavaScript — sin enlaces en el HTML que un buscador pueda
+seguir. Este fork añade:
+
+- **Metadatos completos por página** (`template/bricks/head.tpl.php` +
+  `GenericPage::getMeta()` en `pages/genericPage.class.php`): `<meta name="description">`
+  específica de cada ficha (se deriva del propio contenido cuando existe — objetivo de la misión,
+  texto del hechizo ya resuelto, etc. — o de una plantilla localizada si no), `<link
+  rel="canonical">`, `<meta name="viewport">`, `lang` en `<html>`, y tarjetas Open Graph/Twitter
+  Card (usando el icono de la ficha como imagen cuando lo hay).
+- **`sitemap.xml`**, generado directamente desde la base de datos:
+
+  ```bash
+  php aowow --build=sitemap --force
+  ```
+
+  Produce un índice (`sitemap.xml`) más un sitemap por tipo de entidad (objetos, hechizos, PNJs,
+  misiones, logros, etc.), trocegado al límite de 45.000 URLs por archivo. Excluye lo marcado
+  internamente como oculto de listados, para no gastar presupuesto de rastreo en páginas que el
+  propio sitio no enlaza. Los ficheros se generan en la raíz del sitio y están fuera de git (se
+  regeneran con el comando; conviene volver a ejecutarlo cada vez que cambie de forma relevante el
+  contenido de la base de datos).
+- **`robots.txt`** declara la ubicación del sitemap (`Sitemap: https://<tu-dominio>/sitemap.xml`).
+- **Verificación de propiedad en Google Search Console**: el archivo HTML de verificación que
+  Google te da al dar de alta el sitio se coloca directamente en la raíz del proyecto (junto a
+  `index.php`) — Google solo necesita poder descargarlo en `https://<tu-dominio>/<archivo>.html`.
+  Es un dato de tu propio Search Console, no código, así que `/google*.html` está en `.gitignore`.
+- **Enlace permanente a la web principal** del proyecto, visible en la cabecera de todas las
+  páginas (`template/bricks/headerMenu.tpl.php`), configurado para abrir en pestaña nueva.
 
 ## Créditos
 

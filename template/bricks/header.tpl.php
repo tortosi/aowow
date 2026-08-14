@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="<?=Lang::getLocale()->domain(); ?>">
 <head>
 <?php $this->brick('head'); ?>
 </head>

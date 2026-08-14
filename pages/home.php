@@ -22,6 +22,11 @@ class HomePage extends GenericPage
     public function __construct()
     {
         parent::__construct('home');
+
+        // La portada es la página con más peso en buscadores y la única cuyo título, por no tener
+        // sujeto, se quedaba en el nombre del sitio a secas: sin decir en ningún sitio de qué va esto.
+        array_unshift($this->title, Lang::main('homeMetaTitle'));
+        $this->description = Lang::main('homeMetaDesc', [Cfg::get('NAME')]);
     }
 
     protected function generateContent()

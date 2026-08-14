@@ -339,6 +339,9 @@ class SpellPage extends GenericPage
         $this->headIcons   = [$this->subject->getField('iconString'), $this->subject->getField('stackAmount') ?: ($this->subject->getField('procCharges') > 1 ? $this->subject->getField('procCharges') : '')];
         $this->redButtons  = $redButtons;
         $this->infobox     = $infobox;
+        // el texto del hechizo ya resuelto (con daños, duraciones, etc.) como <meta name="description">.
+        // parseText() devuelve [texto, referencias, ...]: aquí solo interesa el texto.
+        $this->description = $this->subject->parseText('description')[0] ?? '';
 
         // minRange exists..  prepend
         if ($_ = $this->subject->getField('rangeMinHostile'))

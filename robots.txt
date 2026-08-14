@@ -13,3 +13,5 @@ Disallow: /random/
 Disallow: /?search
 Disallow: /search/
 Disallow: /?search=*
+
+Sitemap: https://db.warcrafted.com/sitemap.xml

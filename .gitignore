@@ -70,3 +70,10 @@
 
 # others
 **/.DS_store
+
+# sitemaps generados (php aowow --build=sitemap)
+/sitemap.xml
+/sitemap-*.xml
+
+# verificación de propiedad en Google Search Console (dato del servidor, no del código)
+/google*.html

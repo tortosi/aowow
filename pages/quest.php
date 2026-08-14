@@ -943,6 +943,8 @@ class QuestPage extends GenericPage
         $this->rewards       = $this->createRewards($_side);
         $this->objectives    = $this->subject->parseText('objectives', false);
         $this->details       = $this->subject->parseText('details', false);
+        // el objetivo de la misión es la mejor frase que hay para el <meta name="description">
+        $this->description   = $this->objectives ?: $this->details;
         $this->offerReward   = $this->subject->parseText('offerReward', false);
         $this->requestItems  = $this->subject->parseText('requestItems', false);
         $this->completed     = $this->subject->parseText('completed', false);

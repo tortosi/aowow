@@ -1,4 +1,5 @@
 <?php
+echo '<a href="https://wotlk.warcrafted.com" target="_blank" rel="noopener" id="toplinks-mainsite" class="icon-link">'.Lang::main('mainSite').'</a>|';
 if (User::$id):
     echo '<span id="toplinks-favorites"><a class="hassubmenu"></a>|</span>';
     echo '<a id="toplinks-user">'.User::$displayName.'</a>';
