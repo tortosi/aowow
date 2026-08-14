@@ -1,0 +1,12 @@
+# Cabeceras de caducidad para estáticos (icons, css, js, imágenes, sonido).
+# Las URLs llevan cache-busting por timestamp, así que una caducidad larga es segura.
+# Requiere `sudo a2enmod expires` — con el módulo desactivado, Apache ignora este
+# bloque sin error gracias a <IfModule>.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Cache-Control "public"
+</IfModule>

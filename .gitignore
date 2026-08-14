@@ -1,13 +1,23 @@
 # Git
 *.orig
 
+# Claude Code / documentación de asistencia (uso local, no se publica)
+/.claude/
+/CLAUDE.md
+/AUDITORIA_TODO.md
+
 # cache
 /cache/template/*
 /cache/alphaMaps/*
 /cache/setup/*
+/cache/*.log
+/cache/Artworks/
 
 # extract from MPQ
 /setup/mpqdata/*
+
+# local build tool (not part of upstream aowow, cloned separately)
+/tools-external/
 
 # generated files
 /static/js/profile_all.js
