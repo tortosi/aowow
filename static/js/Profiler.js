@@ -4706,16 +4706,26 @@ function ProfilerInventory(_parent) {
             // Si algo falla, se cae al retrato plano en vez de dejar un hueco negro.
             var realmId = (_profile.realm && _profile.realm[0]) ? _profile.realm[0] : 0;
             if (realmId && _profile.name && !_profile.isCustom) {
-                var host = $WH.ge(_swfModel.id) || _swfModel;
-                $WH.ee(host);
-                var frame = $WH.ce('iframe');
-                frame.src = g_staticUrl + '/modelviewer3d/viewer.html?realm=' +
-                            $WH.urlencode(realmId) + '&char=' + $WH.urlencode(_profile.name);
-                frame.style.width = '275px';
-                frame.style.height = '345px';
-                frame.style.border = '0';
-                frame.setAttribute('scrolling', 'no');
-                $WH.ae(host, frame);
+                // el módulo del visor 3D es opcional (no viene en la instalación gratuita);
+                // comprobamos que exista antes de montar el iframe, si no, retrato plano
+                new Ajax(g_staticUrl + '/modelviewer3d/viewer.html', {
+                    method: 'HEAD',
+                    onSuccess: function () {
+                        var host = $WH.ge(_swfModel.id) || _swfModel;
+                        $WH.ee(host);
+                        var frame = $WH.ce('iframe');
+                        frame.src = g_staticUrl + '/modelviewer3d/viewer.html?realm=' +
+                                    $WH.urlencode(realmId) + '&char=' + $WH.urlencode(_profile.name);
+                        frame.style.width = '275px';
+                        frame.style.height = '345px';
+                        frame.style.border = '0';
+                        frame.setAttribute('scrolling', 'no');
+                        $WH.ae(host, frame);
+                    },
+                    onFailure: function () {
+                        _renderFlatPortrait();
+                    }
+                });
             }
             else {
                 _renderFlatPortrait();
