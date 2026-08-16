@@ -57,6 +57,16 @@
 # prototipo del visor, superado por /static/modelviewer3d/
 /static/_test-strange-3d/
 
+# módulo del visor 3D: de distribución restringida (solo mediante donación), vive
+# en un repo privado aparte. No se trackea en el repo público, aunque el fichero
+# exista en disco y siga funcionando en producción. Ver docs/VISOR-3D.md.
+/includes/ajaxHandler/model3d.class.php
+/static/modelviewer3d/viewer.html
+/static/modelviewer3d/.htaccess
+/static/modelviewer3d/lib/
+/setup/extract-client-models.sh
+/setup/tools/extract-attachments.py
+
 # modelviewer (~7GB data)
 /static/modelviewer/models/*
 /static/modelviewer/thumbs/*
