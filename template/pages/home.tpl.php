@@ -21,7 +21,7 @@ if (!empty($this->featuredBox['altHomeLogo'])):
     </style>
 <?php endif; ?>
     <div class="home-wrapper">
-        <h1>Aowow</h1>
+        <h1>IceTracks WotLK</h1>
         <div class="home-logo" id="home-logo"></div>
 
 <?php $this->brick('announcement'); ?>
@@ -82,15 +82,23 @@ endif;
 
     <div class="footer">
         <div class="footer-links linklist">
-            <a href="?aboutus"><?=Lang::main('aboutUs'); ?></a>|<a href="https://github.com/azerothcore/aowow" target="_blank">Github</a>|<a href="#" id="footer-links-language"><?=Lang::main('language'); ?></a>
+            <a href="?aboutus"><?=Lang::main('aboutUs'); ?></a>|<a href="https://github.com/tortosi/aowow" target="_blank">Github</a>|<a href="#" id="footer-links-language"><?=Lang::main('language'); ?></a>
         </div>
         <div class="footer-copy">
-            &#12484; <?=date('Y');?> WarCrafted<br />
-            Versión Beta 1.0
+            <div class="footer-brand"><a href="https://wotlk.warcrafted.com" target="_blank">IceTracks WotLK</a></div>
+            <div class="footer-tagline">Base de datos no oficial del servidor</div>
+            <p class="footer-legal">
+                Servidor privado no oficial y sin ánimo de lucro. World of Warcraft y
+                Wrath of the Lich King son marcas registradas de Blizzard Entertainment,
+                Inc. Este proyecto no está afiliado ni respaldado por Blizzard
+                Entertainment.
+            </p>
+            <div class="footer-meta">
+                Versión Beta 1.0
 <?php if ($this->coreRevHash): ?>
-            <br>
-            Versión compilada del juego: <a href="https://github.com/azerothcore/azerothcore-wotlk/commit/<?=$this->coreRevHash;?>" title="<?=Util::htmlEscape($this->coreRevText);?>"><?=$this->coreRevHash;?></a>
+                &nbsp;·&nbsp;Versión compilada del juego: <a href="https://github.com/azerothcore/azerothcore-wotlk/commit/<?=$this->coreRevHash;?>" title="<?=Util::htmlEscape($this->coreRevText);?>"><?=$this->coreRevHash;?></a>
 <?php endif; ?>
+            </div>
         </div>
     </div>
 

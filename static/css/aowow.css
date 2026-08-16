@@ -22,12 +22,12 @@ p {
 /******************/
 
 body {
-    background: black;
+    background: #060b14;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
     font-size: 13px;
-    color: #ccc;
+    color: #e7eef7;
 }
 
 small {
@@ -35,14 +35,14 @@ small {
 }
 
 a {
-    color: #FFD100;
+    color: #6fd7ff;
     cursor: pointer;
     outline: none;
     text-decoration: none;
 }
 
 a:hover {
-    color: white;
+    color: #38b6e6;
 }
 
 /***********/
@@ -2637,6 +2637,7 @@ a.modelviewer-close {
     position: relative;
     height: 105px;
     z-index: 1;
+    border-bottom: 1px solid #1f3350;
 }
 
 .header h1 { /* SEO */
@@ -2774,8 +2775,8 @@ a.modelviewer-close {
 /***********/
 
 .topbar {
-    background: #383838;
-    border: 1px solid #484848;
+    background: #101b2e;
+    border: 1px solid #1f3350;
     height: 30px;
     overflow: hidden;
 
@@ -2885,14 +2886,53 @@ span.breadcrumb-ellipsis {
 
 .footer {
     font-size: 11px;
-    color: #666;
+    color: #9fb3c8;
     text-align: center;
-    padding: 50px 0;
+    padding: 46px 0 40px;
+}
+
+.footer-links {
+    padding-bottom: 22px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid #1f3350;
 }
 
 .footer-copy {
-    margin-top: 1em;
-    color: #666666;
+    margin-top: 0;
+    color: #9fb3c8;
+}
+
+.footer-brand {
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+}
+
+.footer-brand a {
+    color: #e3b64f;
+}
+
+.footer-brand a:hover {
+    color: #c6912f;
+}
+
+.footer-tagline {
+    margin-top: 5px;
+    font-size: 11px;
+    color: #6f88a6;
+}
+
+.footer-legal {
+    max-width: 520px;
+    margin: 18px auto 0;
+    line-height: 1.6;
+    color: #56718f;
+}
+
+.footer-meta {
+    margin-top: 16px;
+    font-size: 10px;
+    color: #4d6a8a;
 }
 
 td.screenshot-cell {
@@ -3289,6 +3329,7 @@ td.screenshot-cell:hover img {
 
 .text h1 {
     color: white;
+    font-family: 'Cinzel', 'Georgia', serif;
     font-size: 19px;
     font-weight: normal;
     border-bottom: 1px solid #505050;
@@ -3305,6 +3346,10 @@ td.screenshot-cell:hover img {
     padding: 0 0 3px 0;
     margin: 26px 0 13px 0;
     line-height: 1.25em;
+}
+
+.text h2 {
+    font-family: 'Cinzel', 'Georgia', serif;
 }
 
 .text h3, .comment-body h3, .forums-post-body h3 {
@@ -3686,18 +3731,18 @@ a.button-bigblue b {
 /*************/
 
 .linklist {
-    color: #666666;
+    color: #4d6a8a;
     font-size: 11px;
 }
 
 .linklist a {
     margin: 0 0.8em;
     text-decoration: none;
-    color: #FFCD55;
+    color: #6fd7ff;
 }
 
 .linklist a:hover, .linklist a.open {
-    color: #F6E6B3;
+    color: #38b6e6;
     text-decoration: underline;
 }
 

@@ -11,7 +11,10 @@
     <link rel="canonical" href="<?=Util::htmlEscape($meta['canonical']); ?>" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="SHORTCUT ICON" href="<?=Cfg::get('STATIC_URL'); ?>/images/logos/favicon.ico" />
-    <link rel="search" type="application/opensearchdescription+xml" href="<?=Cfg::get('STATIC_URL'); ?>/download/searchplugins/aowow.xml" title="Aowow" />
+    <link rel="search" type="application/opensearchdescription+xml" href="<?=Cfg::get('STATIC_URL'); ?>/download/searchplugins/aowow.xml" title="IceTracks WotLK" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
 
     <?php /* tarjeta al compartir el enlace en redes sociales, Discord, etc. */ ?>
     <meta property="og:site_name" content="<?=Util::htmlEscape($meta['siteName']); ?>">
