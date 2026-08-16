@@ -811,9 +811,9 @@ var mn_currencies = [
     [2,"Jugador contra Jugador","?currencies=2"]
 ];
 var mn_enchantments = [
-    [1,"[Proc Spell]","?enchantments&filter=ty=1"],
-    [3,"[Equip Spell]","?enchantments&filter=ty=3"],
-    [7,"[Use Spell]","?enchantments&filter=ty=7"],
+    [1,"Prob. Hechizo","?enchantments&filter=ty=1"],
+    [3,"Equipar Hechizo","?enchantments&filter=ty=3"],
+    [7,"Usar Hechizo","?enchantments&filter=ty=7"],
     [8,"Ranura prismática","?enchantments&filter=ty=8"],
     [5,"Atributos","?enchantments&filter=ty=5"],
     [2,"Daño de arma","?enchantments&filter=ty=2"],
@@ -3097,8 +3097,8 @@ var LANG = {
 
     outofdate_stc: "Desactualizado",
 
-    tab_pettrainer:          "[Trainer]",
-    tab_feedback:            "Feedback",
+    tab_pettrainer:          "Entrenador",
+    tab_feedback:            "Comentarios",
     tab_abilities:           "Habilidades",
     tab_achievements:        "Logros",
     tab_addyourcomment:      "Añadir tu comentario",
@@ -4172,7 +4172,7 @@ var LANG = {
         hasreagents:                "Tiene componentes",
         scaling:                    "Escala con el nivel",
         requiresprofspec:           "Requiere especialización en profesión",
-        requiresfaction:            "[Requires faction]",
+        requiresfaction:            "Requiere facción",
         resourcetype:               "Tipo de recurso",
         source:                     "Fuente",
         trainingcost:               "Coste de entrenamiento",
@@ -4353,7 +4353,7 @@ var LANG = {
     // aowow custom
     fienchantments: {
         id:             "ID",
-        hascondition:   "[Requires a combination of gems]",
+        hascondition:   "Requiere una combinación de gemas",
         requiresprof:   "Requiere una profesión",
 
         sepcommunity:   "Comunidad",
