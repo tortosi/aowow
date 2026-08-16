@@ -52,10 +52,27 @@ proyecto original y quieres saber qué podría entrar en conflicto.
 
 ## Antes de empezar
 
+### ¿Usas Windows?
+
+Sí se puede — PHP, MySQL y Apache/nginx necesitan un entorno Linux, así que en Windows
+10/11 se instala dentro de **WSL** (Windows Subsystem for Linux): te da un Linux real
+corriendo dentro de Windows, sin necesidad de una máquina virtual aparte. Para
+instalarlo, abre PowerShell **como administrador** y ejecuta:
+
+```powershell
+wsl --install
+```
+
+Reinicia el ordenador si te lo pide. Al terminar tendrás una aplicación "Ubuntu" en el
+menú de inicio — ábrela y te dará una terminal Linux normal. A partir de ahí, sigue el
+resto de esta guía **tal cual, sin ningún cambio**: dentro de WSL todos los comandos son
+exactamente los mismos que en un servidor Linux.
+
 Esta guía asume que ya tienes:
 
-- Un servidor (o tu propio ordenador con Linux) donde puedas instalar programas y donde
-  ya tengas montado tu servidor de AzerothCore (worldserver + authserver funcionando).
+- Un servidor (o tu propio ordenador — con Linux, o con Windows + WSL como se explica
+  arriba) donde puedas instalar programas y donde ya tengas montado tu servidor de
+  AzerothCore (worldserver + authserver funcionando).
 - Acceso a una terminal (línea de comandos) en ese servidor. Si nunca has usado una
   terminal: es una ventana donde escribes comandos de texto en vez de hacer clic en
   botones. Cada bloque de código gris de esta guía es algo que copias y pegas ahí,
@@ -167,8 +184,7 @@ php aowow --database
 ```
 
 Al terminar, genera el archivo `config/config.php` con esos datos. **Este archivo
-contiene contraseñas — nunca lo subas a un repositorio ni lo compartas.** Ya está
-excluido de git por ti.
+contiene contraseñas — nunca lo subas a un repositorio ni lo compartas.**
 
 ### 5. Extraer los datos del cliente de WoW
 
